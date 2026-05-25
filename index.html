@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OOTDATE — 오늘의 데이트 코스</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="logo">OOT<span class="logo-accent">DATE</span></div>
+    <div class="nav-links">
+      <button class="nav-link active" id="navCourse" onclick="goToFlow()">✨ 코스 만들기</button>
+      <button class="nav-link" id="navFitmap" onclick="showStep('step-fitmap', true)">🗺️ 핏맵</button>
+    </div>
+  </div>
+</nav>
+
+<div class="progress-bar" id="progressBar">
+  <div class="progress-fill" id="progressFill"></div>
+</div>
+
+<!-- ===== STEP 1: UPLOAD ===== -->
+<section id="step-upload" class="step active">
+  <div class="hero-gradient"></div>
+  <div class="container">
+    <div class="hero-copy">
+      <h1>오늘 핏으로<br><span class="accent-text">데이트 코스</span>를</h1>
+      <p>OOTD 사진 하나로 나만의 데이트 코스를 완성하세요 💕</p>
+    </div>
+
+    <div class="card upload-card">
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="photoInput" accept="image/*" hidden>
+        <div id="uploadPlaceholder" class="upload-placeholder">
+          <div class="upload-icon">📸</div>
+          <p class="upload-title">오늘의 OOTD를 올려주세요</p>
+          <p class="upload-sub">클릭하거나 드래그해서 업로드</p>
+        </div>
+        <div id="previewWrap" class="preview-wrap" style="display:none">
+          <img id="previewImg" class="preview-img" alt="OOTD preview">
+          <button class="preview-remove" onclick="removePhoto()">✕</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">📍 어디서 만나요?</label>
+        <div class="input-wrap">
+          <input type="text" id="locationInput" class="form-input"
+                 placeholder="예) 홍대, 강남, 성수동, 이태원..." autocomplete="off">
+        </div>
+        <div class="suggestions" id="suggestionsBox"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">👥 몇 명이서 만나요?</label>
+        <div class="people-row">
+          <button class="counter-btn" onclick="changePeople(-1)">−</button>
+          <div class="counter-display">
+            <span class="counter-num" id="peopleNum">2</span>
+            <span class="counter-label" id="peopleLabel">둘이서 💑</span>
+          </div>
+          <button class="counter-btn" onclick="changePeople(1)">+</button>
+        </div>
+      </div>
+
+      <button class="btn-primary btn-full" onclick="startAnalysis()">
+        ✨ AI로 무드 분석하기
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== STEP 2: ANALYSIS ===== -->
+<section id="step-analysis" class="step">
+  <div class="container center-v">
+    <div class="analysis-wrap">
+      <div class="orbit-outer">
+        <div class="orbit-ring ring-1"></div>
+        <div class="orbit-ring ring-2"></div>
+        <div class="orbit-core">
+          <span id="analysisEmoji">👗</span>
+        </div>
+      </div>
+      <h2 id="analysisTitle">AI가 오늘의 핏을 분석 중이에요</h2>
+      <p id="analysisSub">스타일, 색감, 무드를 파악하고 있어요...</p>
+      <div class="dot-loader"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== STEP 3: CONCEPT SELECTION ===== -->
+<section id="step-concept" class="step">
+  <div class="container">
+    <div class="result-banner">
+      <div class="result-ootd">
+        <img id="resultThumbnail" class="result-thumb" alt="OOTD">
+        <div class="detected-badge" id="detectedBadge">
+          <span id="detectedEmoji">✨</span>
+          <span id="detectedLabel">느좋</span>
+        </div>
+      </div>
+      <div class="result-info">
+        <span class="tag-label">AI 분석 결과</span>
+        <h2 id="resultHeadline">오늘의 핏 분석!</h2>
+        <p id="resultDesc">트렌디하고 세련된 룩이에요. 핫플레이스에서 인생샷 남기기 딱 좋은 날!</p>
+      </div>
+    </div>
+
+    <div class="concept-section">
+      <h3>오늘 어떤 느낌의 데이트? 💬</h3>
+      <p class="concept-sub">AI가 추천하는 컨셉이 있지만, 원하는 무드로 바꿀 수 있어요!</p>
+      <div class="concept-grid" id="conceptGrid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== STEP 4: RECOMMENDATIONS ===== -->
+<section id="step-recommendations" class="step">
+  <div class="container">
+    <div class="rec-topbar">
+      <button class="back-btn" onclick="showStep('step-concept')">← 컨셉 바꾸기</button>
+      <div class="rec-badge-row">
+        <span id="recEmoji">🌿</span>
+        <strong id="recLabel">힐링</strong>
+        <span class="dot-sep">·</span>
+        <span id="recLocationLabel">홍대</span>
+      </div>
+    </div>
+
+    <div class="cat-tabs" id="catTabs">
+      <button class="cat-tab active" data-cat="카페">☕ 카페</button>
+      <button class="cat-tab" data-cat="맛집">🍜 맛집</button>
+      <button class="cat-tab" data-cat="볼거리">👀 볼거리</button>
+      <button class="cat-tab" data-cat="놀거리">🎮 놀거리</button>
+      <button class="cat-tab" data-cat="쉼터">🌿 쉼터</button>
+      <button class="cat-tab" data-cat="경치">🌅 경치</button>
+    </div>
+
+    <div class="places-grid" id="placesGrid"></div>
+
+    <div class="basket-bar" id="basketBar">
+      <div class="basket-left">
+        <span class="basket-count" id="basketCount">0</span>
+        <span>곳 선택됨</span>
+      </div>
+      <div class="basket-chips" id="basketChips"></div>
+      <button class="btn-primary btn-sm" onclick="showStep('step-course')" id="basketBtn" disabled>
+        코스 설계 →
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== STEP 5: COURSE BUILDER ===== -->
+<section id="step-course" class="step">
+  <div class="container">
+    <div class="course-topbar">
+      <button class="back-btn" onclick="showStep('step-recommendations')">← 장소 추가하기</button>
+      <h2>🗺️ 코스 설계</h2>
+    </div>
+
+    <div class="route-card">
+      <div class="route-row">
+        <div class="route-dot green-dot"></div>
+        <input type="text" id="startInput" class="form-input"
+               placeholder="만나는 장소 (예: 홍대입구역 2번출구)">
+      </div>
+
+      <div class="route-middle">
+        <div class="route-line"></div>
+        <div class="selected-route-places" id="routePlaces"></div>
+        <div class="route-line"></div>
+      </div>
+
+      <div class="route-row">
+        <div class="route-dot red-dot"></div>
+        <input type="text" id="endInput" class="form-input"
+               placeholder="헤어지는 장소 (예: 신촌역 1번출구)">
+      </div>
+    </div>
+
+    <p class="drag-hint">💡 카드를 드래그해서 순서를 바꿀 수 있어요</p>
+
+    <button class="btn-primary btn-full" onclick="optimizeCourse()">
+      ✨ AI로 최적 동선 정렬하기
+    </button>
+
+    <div class="final-section" id="finalSection">
+      <h3>🎯 오늘의 데이트 코스</h3>
+      <div class="course-timeline" id="courseTimeline"></div>
+      <div class="course-action-btns">
+        <button class="btn-outline" onclick="shareCourse()">🔗 공유하기</button>
+        <button class="btn-primary" onclick="saveCourse()">💾 저장하기</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== STEP 6: FITMAP ===== -->
+<section id="step-fitmap" class="step">
+  <div class="container">
+    <div class="fitmap-header">
+      <h2>🗺️ 핏맵</h2>
+      <p>각 장소에서 사람들이 어떻게 입고 갔는지 구경해요!<br>내 핏도 올려서 다른 사람의 참고가 되어주세요 ✨</p>
+    </div>
+
+    <div class="fitmap-loc-tabs" id="fitmapLocTabs"></div>
+
+    <div class="fitmap-vibe-pills" id="fitmapVibePills">
+      <button class="vibe-pill active" data-vibe="전체">전체</button>
+      <button class="vibe-pill" data-vibe="느좋">✨ 느좋</button>
+      <button class="vibe-pill" data-vibe="힐링">🌿 힐링</button>
+      <button class="vibe-pill" data-vibe="로맨틱">💕 로맨틱</button>
+      <button class="vibe-pill" data-vibe="캐주얼">👟 캐주얼</button>
+      <button class="vibe-pill" data-vibe="파티">🎉 파티</button>
+    </div>
+
+    <div class="fitmap-grid" id="fitmapGrid"></div>
+
+    <div class="fitmap-upload-cta">
+      <div class="fitmap-cta-inner">
+        <h3>나도 핏 공유하기 📸</h3>
+        <p>이 장소에 입고 간 옷 사진을 올려주세요!</p>
+        <button class="btn-primary" onclick="alert('곧 오픈 예정이에요! 기대해주세요 😊')">핏 올리기</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
