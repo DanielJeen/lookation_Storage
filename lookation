@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Install Google Gemini CLI globally
+set -euo pipefail
+
+if ! command -v npm >/dev/null 2>&1; then
+	echo "npm is not installed. Please install Node.js and npm first."
+	exit 1
+fi
+
+echo "Installing @google/gemini-cli globally..."
+npm install -g @google/gemini-cli
+echo "Done."
+
+# End of script
